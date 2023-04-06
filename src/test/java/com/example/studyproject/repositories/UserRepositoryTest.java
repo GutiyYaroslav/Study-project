@@ -6,6 +6,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.annotation.DirtiesContext;
 
 @DataJpaTest
 public class UserRepositoryTest {
@@ -19,6 +20,7 @@ public class UserRepositoryTest {
     }
 
     @Test
+
     void userRepository_existUserByEmail_UserExists(){
         User user = User.builder()
                 .firstName("Slavko")
@@ -34,6 +36,7 @@ public class UserRepositoryTest {
     }
 
     @Test
+
     void userRepository_existUserByEmail_UserDoesNotExist(){
 
         boolean result = userRepository.existsUserByEmail("slavko@gmail.com");
