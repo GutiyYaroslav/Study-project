@@ -3,9 +3,11 @@ package com.example.studyproject.dto;
 import com.example.studyproject.validators.user.email.ValidEmail;
 import com.example.studyproject.validators.user.name.ValidName;
 import com.example.studyproject.validators.user.password.ValidPassword;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
+@Builder
 public class UserDTO {
 
     private Long id;

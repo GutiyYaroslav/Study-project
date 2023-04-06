@@ -15,14 +15,14 @@ import org.springframework.stereotype.Service;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final UserDTOToUserConverter userConverter;
+
 
     @Override
     public User create(UserDTO userDTO) throws UserAlreadyExistsException {
         if(userRepository.existsUserByEmail(userDTO.getEmail())){
             throw new UserAlreadyExistsException("User with email " + userDTO.getEmail() + " already exists");
         }
-        return userRepository.save(userConverter.convertUserDTOToUser(userDTO));
+        return userRepository.save(UserDTOToUserConverter.convertUserDTOToUser(userDTO));
     }
 
     @Override
@@ -45,6 +45,6 @@ public class UserServiceImpl implements UserService {
         if(!existingUser.getEmail().equals(userDTO.getEmail()) && userRepository.existsUserByEmail(userDTO.getEmail())) {
             throw new UserAlreadyExistsException("User with email " + userDTO.getEmail() + " already exists");
         }
-        return userRepository.save(userConverter.convertUserDTOToUser(userDTO));
+        return userRepository.save(UserDTOToUserConverter.convertUserDTOToUser(userDTO));
     }
 }

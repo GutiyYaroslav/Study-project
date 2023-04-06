@@ -7,6 +7,5 @@ import java.util.List;
 @Setter
 @Getter
 public class ValidationError {
-
     private List<String> errors;
 }
