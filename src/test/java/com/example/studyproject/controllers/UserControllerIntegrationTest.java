@@ -43,14 +43,8 @@ public class UserControllerIntegrationTest {
     @Test
     @DirtiesContext
     public void getById_ShouldReturnUser() throws Exception {
-        UserDTO userDTO = UserDTO.builder()
-                .firstName("Slavko")
-                .lastName("Gutiy")
-                .email("slavko@gmail.com")
-                .password("Slavko1234$")
-                .build();
+        User user = userService.create(createDefaultUserDTO());
 
-        User user = userService.create(userDTO);
         String expectedResponse = objectMapper.writeValueAsString(user);
 
         MvcResult mvcResult = mockMvc.perform(get("/api/v1/users/" + user.getId()))
@@ -80,21 +74,15 @@ public class UserControllerIntegrationTest {
     @Test
     @DirtiesContext
     public void add_ShouldReturnCreatedUser() throws Exception {
-        UserDTO userDTO = UserDTO.builder()
-                .firstName("Roman")
-                .lastName("Chuhniy")
-                .email("romko@gmail.com")
-                .password("Romko1234$")
-                .build();
         User user = User.builder()
                 .id(1L)
-                .firstName("Roman")
-                .lastName("Chuhniy")
-                .email("romko@gmail.com")
-                .password("Romko1234$")
+                .firstName("FirstName")
+                .lastName("LastName")
+                .email("email@domain.com")
+                .password("Password1#")
                 .build();
 
-        String requestBody = objectMapper.writeValueAsString(userDTO);
+        String requestBody = objectMapper.writeValueAsString(createDefaultUserDTO());
         String responseBody = objectMapper.writeValueAsString(user);
 
         MvcResult mvcResult = mockMvc.perform(post("/api/v1/users")
@@ -111,9 +99,9 @@ public class UserControllerIntegrationTest {
     @DirtiesContext
     public void add_WhenUserDTOInvalid_ShouldReturn400() throws Exception {
         UserDTO userDTO = UserDTO.builder()
-                .lastName("Chuhniy")
-                .email("romko@gmail.com")
-                .password("Romko1234$")
+                .lastName("LastName")
+                .email("email@domain.com")
+                .password("Password1#")
                 .build();
 
         ValidationError error = new ValidationError();
@@ -135,25 +123,13 @@ public class UserControllerIntegrationTest {
     @Test
     @DirtiesContext
     public void add_WhenUserDTOsEmailAlreadyExist_ShouldReturn409() throws Exception {
-        UserDTO userDTO = UserDTO.builder()
-                .firstName("Olga")
-                .lastName("Chuhniy")
-                .email("Olga@gmail.com")
-                .password("Olga1234$")
-                .build();
-        UserDTO userDTOAlreadyExist = UserDTO.builder()
-                .firstName("Olha")
-                .lastName("Konopenko")
-                .email("Olga@gmail.com")
-                .password("Konopenko1234$")
-                .build();
-        userService.create(userDTOAlreadyExist);
+        userService.create(createDefaultUserDTO());
 
         ValidationError error = new ValidationError();
         error.setErrors(List.of("User with such email already exists"));
         String expectedResponse = objectMapper.writeValueAsString(error);
 
-        String requestBody = objectMapper.writeValueAsString(userDTO);
+        String requestBody = objectMapper.writeValueAsString(createDefaultUserDTO());
 
         MvcResult mvcResult = mockMvc.perform(post("/api/v1/users")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -168,14 +144,7 @@ public class UserControllerIntegrationTest {
     @Test
     @DirtiesContext
     public void deleteById_ShouldReturnNoContent() throws Exception {
-        UserDTO userDTO = UserDTO.builder()
-                .firstName("Alex")
-                .lastName("Tkach")
-                .email("tkach@gmail.com")
-                .password("AlexTkach1234$")
-                .build();
-
-        User user = userService.create(userDTO);
+        User user = userService.create(createDefaultUserDTO());
 
         MvcResult mvcResult = mockMvc.perform(delete("/api/v1/users/" + user.getId()))
                 .andExpect(status().isNoContent())
@@ -203,21 +172,14 @@ public class UserControllerIntegrationTest {
     @Test
     @DirtiesContext
     public void edit_returnChangedUser() throws Exception{
-        UserDTO userDTOAlreadyExist = UserDTO.builder()
-                .firstName("Olga")
-                .lastName("Buzoda")
-                .email("buzova@gmail.com")
-                .password("Buzova1234$")
-                .build();
-
-        User userAlreadyExist = userService.create(userDTOAlreadyExist);
+        User userAlreadyExist = userService.create(createDefaultUserDTO());
 
         UserDTO userDTOReceived = UserDTO.builder()
                 .id(userAlreadyExist.getId())
-                .firstName("Olha")
-                .lastName("Buzoda")
-                .email("buzova@gmail.com")
-                .password("Buzova12345$")
+                .firstName("FirstName")
+                .lastName("LastName")
+                .email("email@domain.com")
+                .password("Password1#")
                 .build();
         String requestBody = objectMapper.writeValueAsString(userDTOReceived);
 
@@ -234,30 +196,23 @@ public class UserControllerIntegrationTest {
     @Test
     @DirtiesContext
     public void edit_WhenUserWithSuchEmailAlreadyExist_return409() throws Exception{
-        UserDTO userDTOAlreadyExist = UserDTO.builder()
-                .firstName("Misha")
-                .lastName("Ivanov")
-                .email("mishanya@gmail.com")
-                .password("Mishanya1234$")
-                .build();
-
-        User userAlreadyExist = userService.create(userDTOAlreadyExist);
+        User userAlreadyExist = userService.create(createDefaultUserDTO());
 
         UserDTO userDTOAlreadyExistWithSuchEmail = UserDTO.builder()
-                .firstName("Misha")
-                .lastName("Shemechko")
-                .email("mh.boy@gmail.com")
-                .password("Shemechko1234$")
+                .firstName("FirstName1")
+                .lastName("LastName1")
+                .email("email1@domain.com")
+                .password("Password1#")
                 .build();
 
         User userAlreadyExistWithSuchEmail = userService.create(userDTOAlreadyExistWithSuchEmail);
 
         UserDTO userDTOReceived = UserDTO.builder()
                 .id(userAlreadyExist.getId())
-                .firstName("Misha")
-                .lastName("Ivanov")
-                .email("mh.boy@gmail.com")
-                .password("Mishanya1234$")
+                .firstName("FirstName")
+                .lastName("LastName")
+                .email("email1@domain.com")
+                .password("Password1#")
                 .build();
 
         String requestBody = objectMapper.writeValueAsString(userDTOReceived);
@@ -279,20 +234,13 @@ public class UserControllerIntegrationTest {
     @Test
     @DirtiesContext
     public void edit_WhenUserDTOInvalid_return400() throws Exception{
-        UserDTO userDTOAlreadyExist = UserDTO.builder()
-                .firstName("Misha")
-                .lastName("Ivanov")
-                .email("mishanya@gmail.com")
-                .password("Mishanya1234$")
-                .build();
-
-        User userAlreadyExist = userService.create(userDTOAlreadyExist);
+        User userAlreadyExist = userService.create(createDefaultUserDTO());
 
         UserDTO userDTOReceived = UserDTO.builder()
                 .id(userAlreadyExist.getId())
-                .lastName("Ivanov")
-                .email("mh.boy@gmail.com")
-                .password("Mishanya1234$")
+                .lastName("LastName")
+                .email("email@domain.com")
+                .password("Password1#")
                 .build();
 
         String requestBody = objectMapper.writeValueAsString(userDTOReceived);
@@ -315,11 +263,11 @@ public class UserControllerIntegrationTest {
     @DirtiesContext
     public void edit_WhenUserDTOWithSuchIdNotFound_return404() throws Exception{
         UserDTO userDTOReceived = UserDTO.builder()
-                .id(100L)
-                .firstName("Misha")
-                .lastName("Ivanov")
-                .email("mh.boy@gmail.com")
-                .password("Mishanya1234$")
+                .id(1L)
+                .firstName("FirstName")
+                .lastName("LastName")
+                .email("email@domain.com")
+                .password("Password1#")
                 .build();
 
         String requestBody = objectMapper.writeValueAsString(userDTOReceived);
@@ -336,6 +284,15 @@ public class UserControllerIntegrationTest {
 
         String actualResponse = mvcResult.getResponse().getContentAsString();
         Assertions.assertThat(actualResponse).isEqualTo(expectedResponse);
+    }
+
+    private UserDTO createDefaultUserDTO(){
+        return UserDTO.builder()
+                .firstName("FirstName")
+                .lastName("LastName")
+                .email("email@domain.com")
+                .password("Password1#")
+                .build();
     }
 
 }
