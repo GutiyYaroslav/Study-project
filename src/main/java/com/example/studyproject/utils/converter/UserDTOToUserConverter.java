@@ -2,7 +2,6 @@ package com.example.studyproject.utils.converter;
 
 import com.example.studyproject.dto.UserDTO;
 import com.example.studyproject.models.User;
-import org.springframework.stereotype.Component;
 
 
 public class UserDTOToUserConverter {
